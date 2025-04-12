@@ -1,26 +1,9 @@
-<?php
-// Proses upload jika ada file
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $uploadDir = 'uploads/';
-  foreach ($_FILES['images']['tmp_name'] as $key => $tmpName) {
-    $fileName = basename($_FILES['images']['name'][$key]);
-    $targetFile = $uploadDir . $fileName;
-    $fileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
-    $allowed = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-
-    if (in_array($fileType, $allowed)) {
-      move_uploaded_file($tmpName, $targetFile);
-    }
-  }
-}
-?>
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Panel Upload & Album Foto</title>
+  <title>Album Foto Otomatis</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -30,39 +13,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       color: #fff;
     }
 
-    h1, h2 {
+    h1 {
       text-align: center;
-    }
-
-    .upload-panel {
-      background-color: #222;
-      padding: 20px;
-      border-radius: 8px;
-      max-width: 600px;
-      margin: 0 auto 30px auto;
-      box-shadow: 0 2px 10px rgba(255,255,255,0.1);
-    }
-
-    .upload-panel input[type="file"] {
-      display: block;
-      margin-bottom: 10px;
-      color: #fff;
-    }
-
-    .upload-panel input[type="submit"] {
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      cursor: pointer;
-      border-radius: 5px;
+      margin-bottom: 20px;
     }
 
     .album-container {
       display: flex;
       flex-direction: column;
       gap: 15px;
-      max-height: 70vh;
+      max-height: 90vh;
       overflow-y: auto;
       padding-right: 10px;
     }
@@ -94,24 +54,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   </style>
 </head>
 <body>
-
-  <h1>Panel Upload Gambar</h1>
-
-  <div class="upload-panel">
-    <form action="" method="post" enctype="multipart/form-data">
-      <label for="images">Pilih Gambar (bisa lebih dari satu):</label>
-      <input type="file" name="images[]" id="images" accept="image/*" multiple required>
-      <input type="submit" value="Upload">
-    </form>
-  </div>
-
-  <h2>Album Foto</h2>
+  <h1>Album Foto</h1>
   <div class="album-container">
     <?php
       $folder = "uploads/";
       $gambar = glob($folder . "*.{jpg,jpeg,png,gif,webp}", GLOB_BRACE);
 
-      // Urutkan terbaru ke atas
+      // Sort berdasarkan waktu upload (paling baru di atas)
       usort($gambar, function($a, $b) {
         return filemtime($b) - filemtime($a);
       });
@@ -121,6 +70,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       }
     ?>
   </div>
-
 </body>
 </html>
